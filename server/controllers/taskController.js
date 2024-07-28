@@ -65,6 +65,20 @@ exports.addTask = async (task) => {
 
 exports.fetchAllTasks = async (req, res) => {
   try {
+    // // Clear the tasks from Redis
+    // await new Promise((resolve, reject) => {
+    //   redisClient.del(process.env.REDIS_KEY, (err) => {
+    //     if (err) {
+    //       reject(err);
+    //     } else {
+    //       resolve();
+    //     }
+    //   });
+    // });
+
+    // await Task.deleteMany({});
+    // console.log("All tasks have been deleted.");
+
     // Attempt to fetch tasks from Redis
     const redisData = await new Promise((resolve, reject) => {
       redisClient.get(process.env.REDIS_KEY, (err, reply) => {

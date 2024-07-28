@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { FaCirclePlus } from "react-icons/fa6";
 import io from "socket.io-client";
 import axios from "axios";
 
-const socket = io(process.env.REACT_APP_BACKEND_URL);
+const socket = io(process.env.REACT_APP_BACKEND_URL as string);
 
-const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+const TaskList: React.FC = () => {
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [newTask, setNewTask] = useState<string>("");
+  console.log(tasks);
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/fetchAllTasks`)
+      .get<string[]>(`${process.env.REACT_APP_BACKEND_URL}/fetchAllTasks`)
       .then((response) => setTasks(response.data))
       .catch((error) => console.error(error));
 
-    socket.on("add", (task) => setTasks((prevTasks) => [...prevTasks, task]));
+    socket.on("add", (task: string) =>
+      setTasks((prevTasks) => [...prevTasks, task])
+    );
 
     return () => {
       socket.off("add");
@@ -29,6 +32,10 @@ const TaskList = () => {
       socket.emit("add", newTask);
       setNewTask("");
     }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewTask(e.target.value);
   };
 
   return (
@@ -45,7 +52,7 @@ const TaskList = () => {
       <div className="new-note-input">
         <input
           value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
+          onChange={handleInputChange}
           type="text"
           placeholder="New Note..."
         />
